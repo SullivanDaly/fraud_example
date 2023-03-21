@@ -89,11 +89,10 @@ public class TypeDB_SessionHandler {
             System.out.println("Which query do you want to try ? 1 or 2");
             System.out.print("Answer: ");
             String answer = reader.readLine();
-            answer = answer.toLowerCase();
-            if (answer.equals("1") || answer.equals("2")) {
-                Stream<ConceptMap> queryAnswers = readTransaction.query().match(TypeQL.parseQuery(myHandler.get_match_query(Integer.parseInt(answer))).asMatch());
-                queryAnswers.forEach(queryAnswer -> System.out.println(queryAnswer.get("p").asThing().getIID()));
-            }
+
+            Stream<ConceptMap> queryAnswers = readTransaction.query().match(myHandler.get_match_query(Integer.parseInt(answer)));
+            queryAnswers.forEach(queryAnswer -> System.out.println(queryAnswer.get("p").asThing().getIID()));
+            System.out.println("Read DONE");
         }
     }
 
