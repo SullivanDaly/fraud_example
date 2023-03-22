@@ -1,4 +1,4 @@
-package org.example;
+package com.typedb.examples.fraud.model;
 
 import java.io.IOException;
 

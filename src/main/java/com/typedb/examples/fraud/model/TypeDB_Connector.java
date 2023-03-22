@@ -1,4 +1,4 @@
-package org.example;
+package com.typedb.examples.fraud.model;
 
 import com.vaticle.typedb.client.api.TypeDBClient;
 import com.vaticle.typedb.client.TypeDB;

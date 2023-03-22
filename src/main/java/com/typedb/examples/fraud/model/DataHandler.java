@@ -1,4 +1,4 @@
-package org.example;
+package com.typedb.examples.fraud.model;
 
 import com.opencsv.bean.CsvToBeanBuilder;
 
@@ -35,7 +35,7 @@ public class DataHandler {
         Fraud currentFraud;
         StringBuilder query = new StringBuilder("insert ");
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             query.append("$ban").append(i).append(" isa Bank, has name '").append(fakeBanks[i][0]).append("'");
             query.append(", has company_type 'Bank';\n");
 
@@ -48,38 +48,38 @@ public class DataHandler {
         while (iterator.hasNext() && current < limit) {
             currentFraud = iterator.next();
             if (current >= offset) {
-                query.append("$gcp").append(current).append(" isa Geo_coordinate, has longitude ").append(currentFraud.getLongitude_person());
-                query.append(", has latitude ").append(currentFraud.getLatitude_person()).append(";\n");
+                query.append("$gcp").append(current).append(" isa Geo_coordinate, has longitude ").append(currentFraud.getCardholderCoordinates().getLongitude_person());
+                query.append(", has latitude ").append(currentFraud.getCardholderCoordinates().getLatitude_person()).append(";\n");
 
-                query.append("$gcc").append(current).append(" isa Geo_coordinate, has longitude ").append(currentFraud.getLongitude_company());
-                query.append(", has latitude ").append(currentFraud.getLatitude_company()).append(";\n");
+                query.append("$gcc").append(current).append(" isa Geo_coordinate, has longitude ").append(currentFraud.getMerchantCoordinates().getLongitude_company());
+                query.append(", has latitude ").append(currentFraud.getMerchantCoordinates().getLatitude_company()).append(";\n");
 
-                query.append("$add").append(current).append(" isa Address, has street '").append(currentFraud.getStreet()).append("'");
-                query.append(", has city '").append(currentFraud.getCity()).append("'");
-                query.append(", has state '").append(currentFraud.getState()).append("'");
-                query.append(", has zip ").append(currentFraud.getZip()).append(";\n");
+                query.append("$add").append(current).append(" isa Address, has street '").append(currentFraud.getAddress().getStreet()).append("'");
+                query.append(", has city '").append(currentFraud.getAddress().getCity()).append("'");
+                query.append(", has state '").append(currentFraud.getAddress().getState()).append("'");
+                query.append(", has zip ").append(currentFraud.getAddress().getZip()).append(";\n");
 
-                query.append("$car").append(current).append(" isa Card, has card_number ").append(currentFraud.getCard_number()).append(";\n");
+                query.append("$car").append(current).append(" isa Card, has card_number ").append(currentFraud.getCreditCare().getCard_number()).append(";\n");
 
-                query.append("$per").append(current).append(" isa Person, has first_name \"").append(currentFraud.getPerson_first_name()).append("\"");
-                query.append(", has last_name \"").append(currentFraud.getPerson_last_name()).append("\"");
-                query.append(", has gender '").append(currentFraud.getGender()).append("'");
-                query.append(", has job \"").append(currentFraud.getJob()).append("\"");
-                query.append(", has date_of_birth ").append(currentFraud.getDate_of_birth()).append(";\n");
+                query.append("$per").append(current).append(" isa Person, has first_name \"").append(currentFraud.getCardholder().getPerson_first_name()).append("\"");
+                query.append(", has last_name \"").append(currentFraud.getCardholder().getPerson_last_name()).append("\"");
+                query.append(", has gender '").append(currentFraud.getCardholder().getGender()).append("'");
+                query.append(", has job \"").append(currentFraud.getCardholder().getJob()).append("\"");
+                query.append(", has date_of_birth ").append(currentFraud.getCardholder().getDate_of_birth()).append(";\n");
 
-                query.append("$com").append(current).append(" isa Company, has name \"").append(currentFraud.getCompany_name()).append("\"");
-                query.append(", has company_type '").append(currentFraud.getCompany_cat()).append("';\n");
+                query.append("$com").append(current).append(" isa Company, has name \"").append(currentFraud.getMerchant().getCompany_name()).append("\"");
+                query.append(", has company_type '").append(currentFraud.getMerchant().getCompany_cat()).append("';\n");
 
-                int random = ThreadLocalRandom.current().nextInt(0, 3);
+                int random = ThreadLocalRandom.current().nextInt(0, 4);
 
 
                 query.append("$r1").append(current).append("(owner: $per").append(current)
                         .append(", attached_card: $car").append(current).append(", attached_bank: $ban").append(random).append(") isa bank_account;\n");
 
                 query.append("$r2").append(current).append("(used_card: $car").append(current).append(", to: $com").append(current).append(") isa transaction");
-                query.append(", has timestamp ").append(currentFraud.getDate_transaction());
-                query.append(", has amount ").append(currentFraud.getAmount());
-                query.append(", has transaction_number '").append(currentFraud.getTransaction_number()).append("';\n");
+                query.append(", has timestamp ").append(currentFraud.getCreditCare().getDate_transaction());
+                query.append(", has amount ").append(currentFraud.getCreditCare().getAmount());
+                query.append(", has transaction_number '").append(currentFraud.getCreditCare().getTransaction_number()).append("';\n");
 
                 query.append("$r3").append(current).append("(location: $add").append(current).append(", geo: $gcp")
                         .append(current).append(", identify: $per").append(current).append(") isa locate;\n");

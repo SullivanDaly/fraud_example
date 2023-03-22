@@ -15,18 +15,6 @@ last_name sub attribute,
 job sub attribute,
     value string;
 
-street sub attribute,
-    value string;
-
-city sub attribute,
-    value string;
-
-state sub attribute,
-    value string;
-
-zip sub attribute,
-    value long;
-
 gender sub attribute,
     value string,
     regex "^(F|M|O)$";
@@ -116,6 +104,7 @@ bank_account sub relation,
     relates attached_card,
     relates attached_bank;
 
+#maybe add transaction_number as ID
 transaction sub relation,
     owns timestamp,
     owns amount,
@@ -123,6 +112,7 @@ transaction sub relation,
     relates used_card,
     relates to;
 
+#locate as a subtype of geolocate
 locate sub relation,
     relates location,
     relates geo,
