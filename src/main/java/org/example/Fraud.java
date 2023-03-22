@@ -12,15 +12,6 @@ public class Fraud {
     private Cardholder cardholder;
 
     @CsvRecurse
-    private Address address;
-
-    @CsvRecurse
-    private CardholderCoordinates cardholderCoordinates;
-
-    @CsvRecurse
-    private MerchantCoordinates merchantCoordinates;
-
-    @CsvRecurse
     private CreditCare creditCare;
 
     public Merchant getMerchant() {
@@ -29,18 +20,6 @@ public class Fraud {
 
     public Cardholder getCardholder() {
         return cardholder;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public CardholderCoordinates getCardholderCoordinates() {
-        return cardholderCoordinates;
-    }
-
-    public MerchantCoordinates getMerchantCoordinates() {
-        return merchantCoordinates;
     }
 
     public CreditCare getCreditCare() {
@@ -52,9 +31,6 @@ public class Fraud {
         return "Fraud{" +
                 "merchant=" + merchant +
                 ", cardholder=" + cardholder +
-                ", address=" + address +
-                ", cardholderCoordinates=" + cardholderCoordinates +
-                ", merchantCoordinates=" + merchantCoordinates +
                 ", creditCare=" + creditCare +
                 '}';
     }

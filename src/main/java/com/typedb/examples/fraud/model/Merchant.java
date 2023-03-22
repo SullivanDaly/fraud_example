@@ -2,6 +2,7 @@ package com.typedb.examples.fraud.model;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvBindByPosition;
+import com.opencsv.bean.CsvRecurse;
 
 public class Merchant {
 
@@ -13,6 +14,9 @@ public class Merchant {
     @CsvBindByName(column = "category")
     private String company_cat;
 
+    @CsvRecurse
+    private MerchantCoordinates merchantCoordinates;
+
     public String getCompany_name() {
         return company_name;
     }
@@ -21,11 +25,16 @@ public class Merchant {
         return company_cat;
     }
 
+    public MerchantCoordinates getMerchantCoordinates() {
+        return merchantCoordinates;
+    }
+
     @Override
     public String toString() {
         return "Merchant{" +
                 "company_name='" + company_name + '\'' +
                 ", company_cat='" + company_cat + '\'' +
+                ", merchantCoordinates=" + merchantCoordinates +
                 '}';
     }
 }

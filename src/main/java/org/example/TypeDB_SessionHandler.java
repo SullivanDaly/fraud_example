@@ -74,7 +74,8 @@ public class TypeDB_SessionHandler {
             String answer = reader.readLine();
             answer = answer.toLowerCase();
             if (answer.equals("yes") || answer.equals("y")) {
-                writeTransaction.query().insert(TypeQL.parseQuery(myHandler.get_insert_query()).asInsert());
+                //writeTransaction.query().insert(TypeQL.parseQuery(myHandler.get_insert_query()).asInsert());
+                writeTransaction.query().insert(TypeQL.parseQuery(myHandler.get_insert_query_DAO()).asInsert());
                 writeTransaction.commit();
                 System.out.println("Loaded the " + database_name + " data");
             }

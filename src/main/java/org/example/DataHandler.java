@@ -1,6 +1,10 @@
 package org.example;
 
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.typedb.examples.fraud.dao.CardholderDAO;
+import com.typedb.examples.fraud.dao.CreditCareDAO;
+import com.typedb.examples.fraud.dao.MerchantDAO;
+import com.typedb.examples.fraud.model.CreditCare;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -21,6 +25,20 @@ public class DataHandler {
     private List<Fraud> parse_data_init() throws FileNotFoundException {
         String fileName = path + "small_dataset_fraud.csv";
         return new CsvToBeanBuilder<Fraud>(new FileReader(fileName)).withType(Fraud.class).build().parse();
+    }
+
+    public String get_insert_query_DAO(){
+        CardholderDAO cardholderDAO = new CardholderDAO(frauds);
+        MerchantDAO merchantDAO = new MerchantDAO(frauds);
+
+        String query = "insert \n";
+        query += merchantDAO.get_insert_query();
+        query += cardholderDAO.get_insert_query();
+
+        CreditCareDAO creditCareDAO = new CreditCareDAO(frauds, cardholderDAO.gethNumberCardholder(), merchantDAO.gethNumberMerchant());
+
+        query += creditCareDAO.get_insert_query();
+        return query;
     }
 
     public String get_insert_query() {
@@ -48,16 +66,16 @@ public class DataHandler {
         while (iterator.hasNext() && current < limit) {
             currentFraud = iterator.next();
             if (current >= offset) {
-                query.append("$gcp").append(current).append(" isa Geo_coordinate, has longitude ").append(currentFraud.getCardholderCoordinates().getLongitude_person());
-                query.append(", has latitude ").append(currentFraud.getCardholderCoordinates().getLatitude_person()).append(";\n");
+                query.append("$gcp").append(current).append(" isa Geo_coordinate, has longitude ").append(currentFraud.getCardholder().getCardholderCoordinates().getLongitude_person());
+                query.append(", has latitude ").append(currentFraud.getCardholder().getCardholderCoordinates().getLatitude_person()).append(";\n");
 
-                query.append("$gcc").append(current).append(" isa Geo_coordinate, has longitude ").append(currentFraud.getMerchantCoordinates().getLongitude_company());
-                query.append(", has latitude ").append(currentFraud.getMerchantCoordinates().getLatitude_company()).append(";\n");
+                query.append("$gcc").append(current).append(" isa Geo_coordinate, has longitude ").append(currentFraud.getMerchant().getMerchantCoordinates().getLongitude_company());
+                query.append(", has latitude ").append(currentFraud.getMerchant().getMerchantCoordinates().getLatitude_company()).append(";\n");
 
-                query.append("$add").append(current).append(" isa Address, has street '").append(currentFraud.getAddress().getStreet()).append("'");
-                query.append(", has city '").append(currentFraud.getAddress().getCity()).append("'");
-                query.append(", has state '").append(currentFraud.getAddress().getState()).append("'");
-                query.append(", has zip ").append(currentFraud.getAddress().getZip()).append(";\n");
+                query.append("$add").append(current).append(" isa Address, has street '").append(currentFraud.getCardholder().getAddress().getStreet()).append("'");
+                query.append(", has city '").append(currentFraud.getCardholder().getAddress().getCity()).append("'");
+                query.append(", has state '").append(currentFraud.getCardholder().getAddress().getState()).append("'");
+                query.append(", has zip ").append(currentFraud.getCardholder().getAddress().getZip()).append(";\n");
 
                 query.append("$car").append(current).append(" isa Card, has card_number ").append(currentFraud.getCreditCare().getCard_number()).append(";\n");
 
@@ -96,18 +114,13 @@ public class DataHandler {
     }
 
     public String get_match_query(int query_choice) {
-        String query = "";
-        switch (query_choice) {
-            case 1:
-                query = "toto";
-                break;
-
-            default:
-                query = "match" +
-                        "$p isa Person, has $z;" +
-                        "$com isa Company, has $y;" +
-                        "$d($p, $com, $x) isa same_place; get $p, $com, $z, $y;";
-        }
+        String query = switch (query_choice) {
+            case 1 -> "toto";
+            default -> "match" +
+                    "$p isa Person, has $z;" +
+                    "$com isa Company, has $y;" +
+                    "$d($p, $com, $x) isa same_place; get $p, $com, $z, $y;";
+        };
         return query;
     }
 
