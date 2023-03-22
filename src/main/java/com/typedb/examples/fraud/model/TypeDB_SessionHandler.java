@@ -27,7 +27,7 @@ public class TypeDB_SessionHandler {
     public TypeDB_SessionHandler(TypeDB_Connector my_connector) {
         this.client = my_connector.getClient();
         database_name = my_connector.getDatabase_name();
-        path = "./data/";
+        path = "./src/main/resources/";
     }
 
     public void load_schema() throws IOException {
