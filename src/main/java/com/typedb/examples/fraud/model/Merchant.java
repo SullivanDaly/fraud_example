@@ -15,7 +15,7 @@ public class Merchant {
     private String company_cat;
 
     @CsvRecurse
-    private MerchantCoordinates merchantCoordinates;
+    private Coordinates merchantCoordinates;
 
     public String getCompany_name() {
         return company_name;
@@ -25,7 +25,7 @@ public class Merchant {
         return company_cat;
     }
 
-    public MerchantCoordinates getMerchantCoordinates() {
+    public Coordinates getMerchantCoordinates() {
         return merchantCoordinates;
     }
 

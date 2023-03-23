@@ -28,8 +28,8 @@ public class CardholderDAO {
             Cardholder currentCardholder = currentHash.getValue();
             String currentName = currentHash.getKey();
 
-            query.append("$gcp").append(current).append(" isa Geo_coordinate, has longitude ").append(currentCardholder.getCardholderCoordinates().getLongitude_person());
-            query.append(", has latitude ").append(currentCardholder.getCardholderCoordinates().getLatitude_person()).append(";\n");
+            query.append("$gcp").append(current).append(" isa Geo_coordinate, has longitude ").append(currentCardholder.getCardholderCoordinates().getLongitude());
+            query.append(", has latitude ").append(currentCardholder.getCardholderCoordinates().getLatitude()).append(";\n");
 
             query.append("$add").append(current).append(" isa Address, has street '").append(currentCardholder.getAddress().getStreet()).append("'");
             query.append(", has city '").append(currentCardholder.getAddress().getCity()).append("'");

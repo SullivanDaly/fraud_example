@@ -1,9 +1,8 @@
 package com.typedb.examples.fraud.model;
 
 import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvBindByPosition;
 
-public class CreditCare {
+public class CreditCard {
     //,trans_date_trans_time,cc_num,merchant,category,amt,first,last,gender,street,city,state,zip,lat,long,city_pop,job,dob,trans_num,unix_time,merch_lat,merch_long,is_fraud
 
     @CsvBindByName(column = "trans_date_trans_time")
@@ -37,7 +36,7 @@ public class CreditCare {
 
     @Override
     public String toString() {
-        return "CreditCare{" +
+        return "CreditCard{" +
                 "date_transaction='" + date_transaction + '\'' +
                 ", card_number='" + card_number + '\'' +
                 ", amount='" + amount + '\'' +

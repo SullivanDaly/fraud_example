@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class CreditCareDAO {
+public class CreditCardDAO {
     private final List<Fraud> lFraud;
     private final HashMap<String, Integer> hNumberCardholder;
     private final HashMap<String, Integer> hNumberMerchant;
-    public CreditCareDAO(List<Fraud> lFraud, HashMap<String, Integer> hNumberCardholder, HashMap<String, Integer> hNumberMerchant) {
+    public CreditCardDAO(List<Fraud> lFraud, HashMap<String, Integer> hNumberCardholder, HashMap<String, Integer> hNumberMerchant) {
         this.hNumberCardholder = hNumberCardholder;
         this.hNumberMerchant = hNumberMerchant;
         this.lFraud = lFraud;
@@ -43,3 +43,4 @@ public class CreditCareDAO {
         return query.toString();
     }
 }
+

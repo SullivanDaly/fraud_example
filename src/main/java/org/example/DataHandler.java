@@ -2,9 +2,8 @@ package org.example;
 
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.typedb.examples.fraud.dao.CardholderDAO;
-import com.typedb.examples.fraud.dao.CreditCareDAO;
+import com.typedb.examples.fraud.dao.CreditCardDAO;
 import com.typedb.examples.fraud.dao.MerchantDAO;
-import com.typedb.examples.fraud.model.CreditCare;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -35,9 +34,9 @@ public class DataHandler {
         query += merchantDAO.get_insert_query();
         query += cardholderDAO.get_insert_query();
 
-        CreditCareDAO creditCareDAO = new CreditCareDAO(frauds, cardholderDAO.gethNumberCardholder(), merchantDAO.gethNumberMerchant());
+        CreditCardDAO creditCardDAO = new CreditCardDAO(frauds, cardholderDAO.gethNumberCardholder(), merchantDAO.gethNumberMerchant());
 
-        query += creditCareDAO.get_insert_query();
+        query += creditCardDAO.get_insert_query();
         return query;
     }
 
@@ -66,11 +65,11 @@ public class DataHandler {
         while (iterator.hasNext() && current < limit) {
             currentFraud = iterator.next();
             if (current >= offset) {
-                query.append("$gcp").append(current).append(" isa Geo_coordinate, has longitude ").append(currentFraud.getCardholder().getCardholderCoordinates().getLongitude_person());
-                query.append(", has latitude ").append(currentFraud.getCardholder().getCardholderCoordinates().getLatitude_person()).append(";\n");
+                query.append("$gcp").append(current).append(" isa Geo_coordinate, has longitude ").append(currentFraud.getCardholder().getCardholderCoordinates().getLongitude());
+                query.append(", has latitude ").append(currentFraud.getCardholder().getCardholderCoordinates().getLatitude()).append(";\n");
 
-                query.append("$gcc").append(current).append(" isa Geo_coordinate, has longitude ").append(currentFraud.getMerchant().getMerchantCoordinates().getLongitude_company());
-                query.append(", has latitude ").append(currentFraud.getMerchant().getMerchantCoordinates().getLatitude_company()).append(";\n");
+                query.append("$gcc").append(current).append(" isa Geo_coordinate, has longitude ").append(currentFraud.getMerchant().getMerchantCoordinates().getLongitude());
+                query.append(", has latitude ").append(currentFraud.getMerchant().getMerchantCoordinates().getLatitude()).append(";\n");
 
                 query.append("$add").append(current).append(" isa Address, has street '").append(currentFraud.getCardholder().getAddress().getStreet()).append("'");
                 query.append(", has city '").append(currentFraud.getCardholder().getAddress().getCity()).append("'");
