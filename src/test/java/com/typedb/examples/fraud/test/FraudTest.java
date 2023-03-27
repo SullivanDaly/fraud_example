@@ -10,37 +10,34 @@ import org.example.TypeDB_SessionWrapper;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.jupiter.api.Order;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public class FraudTest {
     private static TypeDB_SessionWrapper typeDBw;
     private static final String path = "./src/main/resources/";
-    private static List<Cardholder> lCardholder;
-    private static List<CreditCard> lCreditCard;
-    private static List<Merchant> lMerchant;
-    private static List<Transaction> lTransaction;
-    private static List<Fraud> lFraud;
-    private static List<Bank> lBank;
+    private static Set<Cardholder> hCardholder;
+    private static Set<CreditCard> hCreditCard;
+    private static Set<Merchant> hMerchant;
+    private static Set<Transaction> hTransaction;
+    private static Set<Bank> hBank;
 
     @BeforeClass
     public static void loadTestData() throws IOException {
 
-        lCardholder = new ArrayList<>();
-        lCreditCard = new ArrayList<>();
-        lMerchant = new ArrayList<>();
-        lTransaction = new ArrayList<>();
-        lBank = new ArrayList<>();
-        lFraud = new ArrayList<>();
+        hCardholder = new HashSet<>();
+        hCreditCard = new HashSet<>();
+        hMerchant = new HashSet<>();
+        hTransaction = new HashSet<>();
+        hBank = new HashSet<>();
 
         typeDBw = new TypeDB_SessionWrapper();
         typeDBw.init_connection();
@@ -52,44 +49,27 @@ public class FraudTest {
 
     @Test
     public void parse_data() throws FileNotFoundException {
-        HashMap<String, Merchant> hMerchant = new HashMap<String, Merchant>();
-        HashMap<String, CreditCard> hCreditCard = new HashMap<String, CreditCard>();
-        HashMap<String, Cardholder> hCardholder = new HashMap<String, Cardholder>();
         String fileName = path + "small_dataset_fraud.csv";
 
-        lFraud = new CsvToBeanBuilder<Fraud>(new FileReader(fileName)).withType(Fraud.class).build().parse();
+        hTransaction = new CsvToBeanBuilder<Transaction>(new FileReader(fileName)).withType(Transaction.class).build().stream().collect(Collectors.toSet());
 
+        hBank.add(new Bank("ABC", new BankCoordinates("30.5", "-90.3")));
+        hBank.add(new Bank("MNO", new BankCoordinates("33.986391", "-81.200714")));
+        hBank.add(new Bank("QRS", new BankCoordinates("43.7", "-88.2")));
+        hBank.add(new Bank("XYZ", new BankCoordinates("40.98", "-90.4")));
 
-        String[][] fakeBanks = {{"ABC", "30.5", "-90.3"}, {"MNO", "33.986391", "-81.200714"},
-            {"QRS", "43.7", "-88.2"}, {"XYZ", "40.98", "-90.4"}};
+        hTransaction.forEach(currentTransaction -> {
+            Bank currentBank = hBank.stream().skip((int) (hBank.size() * Math.random())).findFirst().get();
+            currentTransaction.getCardholder().getCreditCard().setBank(currentBank);
+        });
 
-        for(String[] currentBank : fakeBanks){
-            lBank.add(new Bank(currentBank[0], new BankCoordinates(currentBank[1], currentBank[2])));
-        }
-
-        for (Fraud currentFraud : lFraud) {
-
-            int random = ThreadLocalRandom.current().nextInt(0, 4);
-            currentFraud.getCardholder().getCreditCard().setBank(lBank.get(random));
-
-            currentFraud.getTransaction().setCardholder(currentFraud.getCardholder());
-            currentFraud.getTransaction().setMerchant(currentFraud.getMerchant());
-
-            hCardholder.put(currentFraud.getCardholder().getPerson_first_name() +
-                    currentFraud.getCardholder().getPerson_last_name(), currentFraud.getCardholder());
-            hMerchant.put(currentFraud.getMerchant().getCompany_name(), currentFraud.getMerchant());
-            hCreditCard.put(currentFraud.getCardholder().getCreditCard().getCard_number(), currentFraud.getCardholder().getCreditCard());
-            lTransaction.add(currentFraud.getTransaction());
-        }
-
-        lCardholder = new ArrayList<Cardholder>(hCardholder.values());
-        lCreditCard = new ArrayList<CreditCard>(hCreditCard.values());
-        lMerchant = new ArrayList<Merchant>(hMerchant.values());
+        hMerchant = hTransaction.stream().map(Transaction::getMerchant).collect(Collectors.toSet());
+        hCardholder = hTransaction.stream().map(Transaction::getCardholder).collect(Collectors.toSet());
     }
 
     @Test
     public void load_schema() throws IOException {
-
+        // MANUAL
         TypeDBSession session = typeDBw.getClient().session(typeDBw.getDatabase_name(), TypeDBSession.Type.SCHEMA);
         try (session) {
             TypeDBTransaction writeTransaction = session.transaction(TypeDBTransaction.Type.WRITE);
@@ -106,17 +86,15 @@ public class FraudTest {
     @Test
     public void load_data() throws IOException {
 
-        CardholderDAO cardholderDAO = new CardholderDAO(typeDBw, lCardholder);
-        MerchantDAO merchantDAO = new MerchantDAO(typeDBw, lMerchant);
-        BankDAO bankDAO = new BankDAO(typeDBw, lBank);
-        CreditCardDAO creditCardDAO = new CreditCardDAO(typeDBw, lCreditCard);
-        TransactionDAO transactionDAO = new TransactionDAO(typeDBw, lTransaction);
+        CardholderDAO cardholderDAO = new CardholderDAO(typeDBw);
+        MerchantDAO merchantDAO = new MerchantDAO(typeDBw);
+        BankDAO bankDAO = new BankDAO(typeDBw);
+        TransactionDAO transactionDAO = new TransactionDAO(typeDBw);
 
-        cardholderDAO.insert_all();
-        merchantDAO.insert_all();
-        bankDAO.insert_all();
-        creditCardDAO.insert_all();
-        transactionDAO.insert_all();
+        cardholderDAO.insert_all(hCardholder);
+        merchantDAO.insert_all(hMerchant);
+        bankDAO.insertAll(hBank);
+        transactionDAO.insert_all(hTransaction);
 
     }
 
@@ -124,7 +102,6 @@ public class FraudTest {
     public static void close() throws IOException {
         typeDBw.close_connection();
     }
-
 
 
 }

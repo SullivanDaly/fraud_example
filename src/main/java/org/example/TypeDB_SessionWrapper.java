@@ -11,14 +11,8 @@ import com.vaticle.typedb.client.api.answer.ConceptMap;
 import com.vaticle.typeql.lang.TypeQL;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Stream;
+import java.util.Set;
+
 
 public class TypeDB_SessionWrapper {
     private TypeDBClient client;
@@ -43,7 +37,7 @@ public class TypeDB_SessionWrapper {
         this.path = path = "./src/main/resources/";
     }
 
-    public void load_data(List<String> lInsert) throws IOException {
+    public void load_data(Set<String> lInsert) throws IOException {
 
         session = client.session(database_name, TypeDBSession.Type.DATA);
         try (TypeDBTransaction writeTransaction = session.transaction(TypeDBTransaction.Type.WRITE)) { // WRITE transaction is open

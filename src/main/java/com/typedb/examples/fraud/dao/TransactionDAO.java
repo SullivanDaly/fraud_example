@@ -1,14 +1,14 @@
 package com.typedb.examples.fraud.dao;
 
+import com.typedb.examples.fraud.model.Merchant;
 import com.typedb.examples.fraud.model.Transaction;
 import org.example.TypeDB_SessionWrapper;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TransactionDAO {
-    private final List<Transaction> lTransaction;
     private final TypeDB_SessionWrapper wrapper;
 
     private final String query1 = "match \n"
@@ -22,19 +22,12 @@ public class TransactionDAO {
             +   "$r2 (used_card: $car ,to: $com) isa transaction, has timestamp %s, has amount %s, "
             +   "has transaction_number \"%s\";";
 
-    public TransactionDAO(TypeDB_SessionWrapper wrapper, List<Transaction> lTransaction) {
+    public TransactionDAO(TypeDB_SessionWrapper wrapper) {
         this.wrapper = wrapper;
-        this.lTransaction = lTransaction;
     }
 
-    private List<String> get_insert_query(){
-        String result = "";
-        List<String> lResult = new ArrayList<String>();
-
-        int current = 0;
-        for(Transaction currentTransaction : lTransaction){
-
-            result = query1.formatted(
+    private String getQueryStr(Transaction currentTransaction){
+        String result = query1.formatted(
                     currentTransaction.getCardholder().getPerson_first_name(),
                     currentTransaction.getCardholder().getPerson_last_name(),
                     currentTransaction.getCardholder().getCreditCard().getBank().getBank_name(),
@@ -48,14 +41,15 @@ public class TransactionDAO {
                     currentTransaction.getTransaction_number()
             );
 
-            lResult.add(result);
-        }
-
-        return lResult;
+        return result;
     }
 
-    public void insert_all() throws IOException {
-        wrapper.load_data(get_insert_query());
+
+
+    public void insert_all(Set<Transaction> lTransaction) throws IOException {
+        Set<String> queryStrs = lTransaction.stream().map(this::getQueryStr).collect(Collectors.toSet());
+
+        wrapper.load_data(queryStrs);
     }
 }
 

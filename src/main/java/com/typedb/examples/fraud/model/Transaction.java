@@ -1,6 +1,7 @@
 package com.typedb.examples.fraud.model;
 
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvRecurse;
 
 public class Transaction {
 
@@ -12,9 +13,9 @@ public class Transaction {
 
     @CsvBindByName(column = "trans_date_trans_time")
     private String date_transaction;
-
+    @CsvRecurse
     private Merchant merchant;
-
+    @CsvRecurse
     private Cardholder cardholder;
 
     public void setMerchant(Merchant merchant) {
