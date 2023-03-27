@@ -1,4 +1,4 @@
-package org.example;
+package com.typedb.examples.fraud.model;
 
 import com.opencsv.bean.CsvRecurse;
 import com.typedb.examples.fraud.model.*;
