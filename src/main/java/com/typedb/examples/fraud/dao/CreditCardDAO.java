@@ -1,46 +1,41 @@
 package com.typedb.examples.fraud.dao;
 
-import org.example.Fraud;
+import com.typedb.examples.fraud.model.CreditCard;
+import org.example.TypeDB_SessionWrapper;
 
-import java.util.HashMap;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class CreditCardDAO {
-    private final List<Fraud> lFraud;
-    private final HashMap<String, Integer> hNumberCardholder;
-    private final HashMap<String, Integer> hNumberMerchant;
-    public CreditCardDAO(List<Fraud> lFraud, HashMap<String, Integer> hNumberCardholder, HashMap<String, Integer> hNumberMerchant) {
-        this.hNumberCardholder = hNumberCardholder;
-        this.hNumberMerchant = hNumberMerchant;
-        this.lFraud = lFraud;
+    private final List<CreditCard> lCreditCard;
+    private final TypeDB_SessionWrapper wrapper;
+    private final String query = "insert \n"
+            + "$car isa Card, has card_number %s;";
+
+    public CreditCardDAO(TypeDB_SessionWrapper wrapper, List<CreditCard> lCreditCard) {
+        this.lCreditCard = lCreditCard;
+        this.wrapper = wrapper;
     }
 
-    public String get_insert_query(){
-        StringBuilder query = new StringBuilder("");
-        int current = 0;
-        // for (Map.Entry<String, Cardholder> currentHash : hCardholder.entrySet()) {
-        for(Fraud currentFraud : lFraud){
+    private List<String> get_insert_query(){
 
-            query.append("$car").append(current).append(" isa Card, has card_number ").append(currentFraud.getCreditCare().getCard_number()).append(";\n");
+        String result = "";
+        List<String> lResult = new ArrayList<String>();
 
-            int numberCardHolder = hNumberCardholder.get(currentFraud.getCardholder().getPerson_first_name() + currentFraud.getCardholder().getPerson_last_name());
-            int random = ThreadLocalRandom.current().nextInt(0, 4);
-
-            query.append("$r1").append(current).append("(owner: $per").append(numberCardHolder)
-                .append(", attached_card: $car").append(current).append(", attached_bank: $ban").append(random).append(") isa bank_account;\n");
-
-            int numberMerchant = hNumberMerchant.get(currentFraud.getMerchant().getCompany_name());
-
-            query.append("$r2").append(current).append("(used_card: $car").append(current).append(", to: $com").append(numberMerchant).append(") isa transaction");
-                query.append(", has timestamp ").append(currentFraud.getCreditCare().getDate_transaction());
-                query.append(", has amount ").append(currentFraud.getCreditCare().getAmount());
-                query.append(", has transaction_number '").append(currentFraud.getCreditCare().getTransaction_number()).append("';\n");
-
-            current++;
+        for (CreditCard currentCreditCard : lCreditCard) {
+            result = query.formatted(currentCreditCard.getCard_number());
+            lResult.add(result);
         }
-
-        return query.toString();
+        return lResult;
     }
-}
 
+    public void insert_all() throws IOException {
+        wrapper.load_data(get_insert_query());
+    }
+
+    public List<CreditCard> getlCreditCard() {
+        return lCreditCard;
+    }
+
+}

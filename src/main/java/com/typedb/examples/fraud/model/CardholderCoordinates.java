@@ -2,7 +2,7 @@ package com.typedb.examples.fraud.model;
 
 import com.opencsv.bean.CsvBindByName;
 
-public class Coordinates {
+public class CardholderCoordinates {
     //,trans_date_trans_time,cc_num,merchant,category,amt,first,last,gender,street,city,state,zip,lat,long,city_pop,job,dob,trans_num,unix_time,merch_lat,merch_long,is_fraud
 
     @CsvBindByName(column = "lat")
@@ -11,7 +11,15 @@ public class Coordinates {
     @CsvBindByName(column = "long")
     private String longitude;
 
-        public String getLatitude() {
+    public CardholderCoordinates() {
+    }
+
+    public CardholderCoordinates(String latitude, String longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
         return latitude;
     }
 

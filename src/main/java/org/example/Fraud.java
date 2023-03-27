@@ -12,7 +12,7 @@ public class Fraud {
     private Cardholder cardholder;
 
     @CsvRecurse
-    private CreditCard creditCard;
+    private Transaction transaction;
 
     public Merchant getMerchant() {
         return merchant;
@@ -22,8 +22,8 @@ public class Fraud {
         return cardholder;
     }
 
-    public CreditCard getCreditCare() {
-        return creditCard;
+    public Transaction getTransaction() {
+        return transaction;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class Fraud {
         return "Fraud{" +
                 "merchant=" + merchant +
                 ", cardholder=" + cardholder +
-                ", creditCare=" + creditCard +
+                ", creditCard=" + transaction +
                 '}';
     }
 }

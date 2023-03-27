@@ -25,7 +25,11 @@ public class Cardholder {
     private Address address;
 
     @CsvRecurse
-    private Coordinates coordinates;
+    private CardholderCoordinates cardholderCoordinates;
+    @CsvRecurse
+    private CreditCard creditCard;
+
+
 
     public String getPerson_first_name() {
         return person_first_name;
@@ -51,8 +55,12 @@ public class Cardholder {
         return address;
     }
 
-    public Coordinates getCardholderCoordinates() {
-        return coordinates;
+    public CardholderCoordinates getCardholderCoordinates() {
+        return cardholderCoordinates;
+    }
+
+    public CreditCard getCreditCard() {
+        return creditCard;
     }
 
     @Override
@@ -64,7 +72,7 @@ public class Cardholder {
                 ", job='" + job + '\'' +
                 ", date_of_birth='" + date_of_birth + '\'' +
                 ", address=" + address +
-                ", cardholderCoordinates=" + coordinates +
+                ", cardholderCoordinates=" + cardholderCoordinates +
                 '}';
     }
 }

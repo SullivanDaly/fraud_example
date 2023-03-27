@@ -1,61 +1,59 @@
 package com.typedb.examples.fraud.dao;
 
 import com.typedb.examples.fraud.model.Cardholder;
-import org.example.Fraud;
+import org.example.TypeDB_SessionWrapper;
 
-import java.util.HashMap;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
 
 public class CardholderDAO {
 
-        private final HashMap<String, Cardholder> hCardholder;
-        private HashMap<String, Integer> hNumberCardholder;
+    private final List<Cardholder> lCardholder;
+    private final TypeDB_SessionWrapper wrapper;
+    private final String query = "insert\n"
+            + "$gcp isa Geo_coordinate, has longitude %s, has latitude %s;\n"
+            + "$add isa Address, has street \"%s\", has city \"%s\", has state \"%s\", has zip %s;\n"
+            + "$per isa Person, has first_name \"%s\", has last_name \"%s\", has gender \"%s\", has job \"%s\", has date_of_birth %s;\n"
+            + "$r3(location: $add, geo: $gcp, identify: $per) isa locate;\n";
 
-        public CardholderDAO(List<Fraud> lFraud) {
-            this.hCardholder = new HashMap<String, Cardholder>();
-            hNumberCardholder = new HashMap<String, Integer>() ;
-
-            lFraud.forEach(currentFraud -> hCardholder.put(currentFraud.getCardholder().getPerson_first_name() +
-                    currentFraud.getCardholder().getPerson_last_name(), currentFraud.getCardholder()));
+    public CardholderDAO( TypeDB_SessionWrapper wrapper, List<Cardholder> lCardholder) {
+        this.lCardholder = lCardholder;
+        this.wrapper = wrapper;
     }
 
-    public String get_insert_query() {
-        StringBuilder query = new StringBuilder("");
-        int current = 0;
+    private List<String> get_insert_query() {
 
-        for (Map.Entry<String, Cardholder> currentHash : hCardholder.entrySet()) {
-            Cardholder currentCardholder = currentHash.getValue();
-            String currentName = currentHash.getKey();
+        String result = "";
+        List<String> lResult = new ArrayList<String>();
 
-            query.append("$gcp").append(current).append(" isa Geo_coordinate, has longitude ").append(currentCardholder.getCardholderCoordinates().getLongitude());
-            query.append(", has latitude ").append(currentCardholder.getCardholderCoordinates().getLatitude()).append(";\n");
+        for (Cardholder currentCardholder : lCardholder) {
+            result = query.formatted(
+                    currentCardholder.getCardholderCoordinates().getLongitude(),
+                    currentCardholder.getCardholderCoordinates().getLatitude(),
+                    currentCardholder.getAddress().getStreet(),
+                    currentCardholder.getAddress().getCity(),
+                    currentCardholder.getAddress().getState(),
+                    currentCardholder.getAddress().getZip(),
+                    currentCardholder.getPerson_first_name(),
+                    currentCardholder.getPerson_last_name(),
+                    currentCardholder.getGender(),
+                    currentCardholder.getJob(),
+                    currentCardholder.getDate_of_birth()
+            );
 
-            query.append("$add").append(current).append(" isa Address, has street '").append(currentCardholder.getAddress().getStreet()).append("'");
-            query.append(", has city '").append(currentCardholder.getAddress().getCity()).append("'");
-            query.append(", has state '").append(currentCardholder.getAddress().getState()).append("'");
-            query.append(", has zip ").append(currentCardholder.getAddress().getZip()).append(";\n");
-
-            query.append("$per").append(current).append(" isa Person, has first_name \"").append(currentCardholder.getPerson_first_name()).append("\"");
-            query.append(", has last_name \"").append(currentCardholder.getPerson_last_name()).append("\"");
-            query.append(", has gender '").append(currentCardholder.getGender()).append("'");
-            query.append(", has job \"").append(currentCardholder.getJob()).append("\"");
-            query.append(", has date_of_birth ").append(currentCardholder.getDate_of_birth()).append(";\n");
-
-            query.append("$r3").append(current).append("(location: $add").append(current).append(", geo: $gcp")
-                        .append(current).append(", identify: $per").append(current).append(") isa locate;\n");
-
-            hNumberCardholder.put(currentName, current);
-            current++;
+            lResult.add(result);
         }
-        return query.toString();
+        return lResult;
     }
 
-    public HashMap<String, Cardholder> gethCardholder() {
-        return hCardholder;
+    public void insert_all() throws IOException {
+        wrapper.load_data(get_insert_query());
     }
 
-    public HashMap<String, Integer> gethNumberCardholder() {
-        return hNumberCardholder;
+    public List<Cardholder> getlCardholder() {
+        return lCardholder;
     }
+
 }

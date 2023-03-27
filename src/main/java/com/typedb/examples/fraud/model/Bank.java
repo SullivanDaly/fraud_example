@@ -1,34 +1,29 @@
 package com.typedb.examples.fraud.model;
 
-
-
 public class Bank {
 
     private String bank_name;
 
-    private String bank_cat;
-
-    private Coordinates bankCoordinates;
-
-
+    private BankCoordinates bankCoordinates;
 
     public String getBank_name() {
         return bank_name;
     }
 
-    public String getBank_cat_cat() {
-        return bank_cat;
+
+    public BankCoordinates getBankCoordinates() {
+        return bankCoordinates;
     }
 
-    public Coordinates getBankCoordinates() {
-        return bankCoordinates;
+    public Bank(String bank_name, BankCoordinates bankCoordinates) {
+        this.bank_name = bank_name;
+        this.bankCoordinates = bankCoordinates;
     }
 
     @Override
     public String toString() {
         return "Bank{" +
                 "bank_name='" + bank_name + '\'' +
-                ", bank_cat='" + bank_cat + '\'' +
                 ", bankCoordinates=" + bankCoordinates +
                 '}';
     }

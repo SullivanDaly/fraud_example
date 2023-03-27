@@ -1,7 +1,6 @@
 package com.typedb.examples.fraud.model;
 
 import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvBindByPosition;
 import com.opencsv.bean.CsvRecurse;
 
 public class Merchant {
@@ -15,7 +14,7 @@ public class Merchant {
     private String company_cat;
 
     @CsvRecurse
-    private Coordinates merchantCoordinates;
+    private MerchantCoordinates merchantCardholderCoordinates;
 
     public String getCompany_name() {
         return company_name;
@@ -25,8 +24,8 @@ public class Merchant {
         return company_cat;
     }
 
-    public Coordinates getMerchantCoordinates() {
-        return merchantCoordinates;
+    public MerchantCoordinates getMerchantCoordinates() {
+        return merchantCardholderCoordinates;
     }
 
     @Override
@@ -34,7 +33,7 @@ public class Merchant {
         return "Merchant{" +
                 "company_name='" + company_name + '\'' +
                 ", company_cat='" + company_cat + '\'' +
-                ", merchantCoordinates=" + merchantCoordinates +
+                ", merchantCoordinates=" + merchantCardholderCoordinates +
                 '}';
     }
 }
