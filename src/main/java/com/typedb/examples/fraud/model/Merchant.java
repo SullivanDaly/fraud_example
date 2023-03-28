@@ -4,15 +4,10 @@ import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvRecurse;
 
 public class Merchant {
-
-    //,trans_date_trans_time,cc_num,merchant,category,amt,first,last,gender,street,city,state,zip,lat,long,city_pop,job,dob,trans_num,unix_time,merch_lat,merch_long,is_fraud
-
     @CsvBindByName(column = "merchant")
     private String company_name;
-
     @CsvBindByName(column = "category")
     private String company_cat;
-
     @CsvRecurse
     private MerchantCoordinates merchantCardholderCoordinates;
 

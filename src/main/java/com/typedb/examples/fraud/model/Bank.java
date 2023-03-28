@@ -1,15 +1,11 @@
 package com.typedb.examples.fraud.model;
 
 public class Bank {
-
     private String bank_name;
-
     private BankCoordinates bankCoordinates;
-
     public String getBank_name() {
         return bank_name;
     }
-
 
     public BankCoordinates getBankCoordinates() {
         return bankCoordinates;

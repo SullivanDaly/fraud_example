@@ -3,17 +3,12 @@ package com.typedb.examples.fraud.model;
 import com.opencsv.bean.CsvBindByName;
 
 public class Address {
-    //,trans_date_trans_time,cc_num,merchant,category,amt,first,last,gender,street,city,state,zip,lat,long,
-
     @CsvBindByName(column = "street")
     private String street;
-
     @CsvBindByName(column = "city")
     private String city;
-
     @CsvBindByName(column = "state")
     private String state;
-
     @CsvBindByName(column = "zip")
     private String zip;
 

@@ -3,6 +3,8 @@ package com.typedb.examples.fraud.test;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.typedb.examples.fraud.dao.*;
 import com.typedb.examples.fraud.model.*;
+import com.vaticle.typedb.client.TypeDB;
+import com.vaticle.typedb.client.api.TypeDBClient;
 import com.vaticle.typedb.client.api.TypeDBSession;
 import com.vaticle.typedb.client.api.TypeDBTransaction;
 import com.vaticle.typeql.lang.TypeQL;
@@ -15,40 +17,39 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class FraudTest {
     private static TypeDB_SessionWrapper typeDBw;
     private static final String path = "./src/main/resources/";
     private static Set<Cardholder> hCardholder;
-    private static Set<CreditCard> hCreditCard;
     private static Set<Merchant> hMerchant;
     private static Set<Transaction> hTransaction;
     private static Set<Bank> hBank;
+    private static TypeDBClient client;
 
     @BeforeClass
     public static void loadTestData() throws IOException {
 
         hCardholder = new HashSet<>();
-        hCreditCard = new HashSet<>();
         hMerchant = new HashSet<>();
         hTransaction = new HashSet<>();
         hBank = new HashSet<>();
 
         typeDBw = new TypeDB_SessionWrapper();
-        typeDBw.init_connection();
-        if (typeDBw.getClient().databases().contains(typeDBw.getDatabase_name())) {
-            typeDBw.getClient().databases().get(typeDBw.getDatabase_name()).delete();
+        String ip_server = "127.0.0.1";
+        String port_server = "1729";
+        client = TypeDB.coreClient(ip_server + ":" + port_server);
+        if (client.databases().contains(typeDBw.getDatabase_name())) {
+            client.databases().get(typeDBw.getDatabase_name()).delete();
         }
-        typeDBw.getClient().databases().create(typeDBw.getDatabase_name());
+        client.databases().create(typeDBw.getDatabase_name());
     }
 
     @Test
-    public void parse_data() throws FileNotFoundException {
+    public void parseData() throws FileNotFoundException {
         String fileName = path + "small_dataset_fraud.csv";
 
         hTransaction = new CsvToBeanBuilder<Transaction>(new FileReader(fileName)).withType(Transaction.class).build().stream().collect(Collectors.toSet());
@@ -59,8 +60,10 @@ public class FraudTest {
         hBank.add(new Bank("XYZ", new BankCoordinates("40.98", "-90.4")));
 
         hTransaction.forEach(currentTransaction -> {
-            Bank currentBank = hBank.stream().skip((int) (hBank.size() * Math.random())).findFirst().get();
-            currentTransaction.getCardholder().getCreditCard().setBank(currentBank);
+            if(hBank.stream().skip((int) (hBank.size() * Math.random())).findFirst().isPresent()) {
+                Bank currentBank = hBank.stream().skip((int) (hBank.size() * Math.random())).findFirst().get();
+                currentTransaction.getCardholder().getCreditCard().setBank(currentBank);
+            }
         });
 
         hMerchant = hTransaction.stream().map(Transaction::getMerchant).collect(Collectors.toSet());
@@ -68,9 +71,9 @@ public class FraudTest {
     }
 
     @Test
-    public void load_schema() throws IOException {
+    public void loadSchema() throws IOException {
         // MANUAL
-        TypeDBSession session = typeDBw.getClient().session(typeDBw.getDatabase_name(), TypeDBSession.Type.SCHEMA);
+        TypeDBSession session = client.session(typeDBw.getDatabase_name(), TypeDBSession.Type.SCHEMA);
         try (session) {
             TypeDBTransaction writeTransaction = session.transaction(TypeDBTransaction.Type.WRITE);
             byte[] encoded = Files.readAllBytes(Paths.get(path + "schema_fraud.tql"));
@@ -84,7 +87,7 @@ public class FraudTest {
     }
 
     @Test
-    public void load_data() throws IOException {
+    public void loadData() throws IOException {
 
         CardholderDAO cardholderDAO = new CardholderDAO(typeDBw);
         MerchantDAO merchantDAO = new MerchantDAO(typeDBw);
@@ -100,7 +103,7 @@ public class FraudTest {
 
     @AfterClass
     public static void close() throws IOException {
-        typeDBw.close_connection();
+        client.close();
     }
 
 

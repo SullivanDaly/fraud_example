@@ -1,16 +1,7 @@
 package org.example;
 
-import com.typedb.examples.fraud.dao.*;
-import com.typedb.examples.fraud.model.Cardholder;
-import com.vaticle.typedb.client.api.TypeDBOptions;
-import com.vaticle.typedb.client.api.TypeDBSession;
-import com.vaticle.typedb.client.api.TypeDBTransaction;
-import com.vaticle.typedb.client.api.answer.ConceptMap;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.stream.Stream;
+
 
 public class Main {
     public static void main(String[] args) throws IOException {

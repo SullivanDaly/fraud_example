@@ -4,32 +4,22 @@ import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvRecurse;
 
 public class Cardholder {
-    //,trans_date_trans_time,cc_num,merchant,category,amt,first,last,gender,street,city,state,zip,lat,long,city_pop,job,dob,trans_num,unix_time,merch_lat,merch_long,is_fraud
-
     @CsvBindByName(column = "first")
     private String person_first_name;
-
     @CsvBindByName(column = "last")
     private String person_last_name;
-
     @CsvBindByName(column = "gender")
     private String gender;
-
     @CsvBindByName(column = "job")
     private String job;
-
     @CsvBindByName(column = "dob")
     private String date_of_birth;
-
     @CsvRecurse
     private Address address;
-
     @CsvRecurse
     private CardholderCoordinates cardholderCoordinates;
     @CsvRecurse
     private CreditCard creditCard;
-
-
 
     public String getPerson_first_name() {
         return person_first_name;

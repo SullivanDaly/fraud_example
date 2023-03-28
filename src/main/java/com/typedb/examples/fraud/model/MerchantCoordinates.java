@@ -3,11 +3,8 @@ package com.typedb.examples.fraud.model;
 import com.opencsv.bean.CsvBindByName;
 
 public class MerchantCoordinates {
-    //,trans_date_trans_time,cc_num,merchant,category,amt,first,last,gender,street,city,state,zip,lat,long,city_pop,job,dob,trans_num,unix_time,merch_lat,merch_long,is_fraud
-
     @CsvBindByName(column = "merch_lat")
     private String latitude_company;
-
     @CsvBindByName(column = "merch_long")
     private String longitude_company;
 

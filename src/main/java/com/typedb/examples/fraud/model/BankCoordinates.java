@@ -1,10 +1,7 @@
 package com.typedb.examples.fraud.model;
 
 public class BankCoordinates {
-    //,trans_date_trans_time,cc_num,merchant,category,amt,first,last,gender,street,city,state,zip,lat,long,city_pop,job,dob,trans_num,unix_time,merch_lat,merch_long,is_fraud
-
     private String latitude;
-
     private String longitude;
 
     public BankCoordinates(String latitude, String longitude) {
