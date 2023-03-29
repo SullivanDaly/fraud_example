@@ -19,20 +19,17 @@ public class MerchantDAO {
     }
 
     private String getQueryStr(Merchant currentMerchant){
-
         String result = query.formatted(
                     currentMerchant.getMerchantCoordinates().getLongitude(),
                     currentMerchant.getMerchantCoordinates().getLatitude(),
                     currentMerchant.getCompany_name(),
                     currentMerchant.getCompany_cat()
             );
-
         return result;
     }
 
     public void insert_all(Set<Merchant> lMerchant) throws IOException {
         Set<String> queryStrs = lMerchant.stream().map(this::getQueryStr).collect(Collectors.toSet());
-
         wrapper.load_data(queryStrs);
     }
 

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 public class CardholderDAO {
 
     private final TypeDB_SessionWrapper wrapper;
@@ -23,7 +22,6 @@ public class CardholderDAO {
     }
 
     private String getQueryStr(Cardholder currentCardholder) {
-
         String result = query.formatted(
                     currentCardholder.getCardholderCoordinates().getLongitude(),
                     currentCardholder.getCardholderCoordinates().getLatitude(),
@@ -38,14 +36,12 @@ public class CardholderDAO {
                     currentCardholder.getDate_of_birth(),
                     currentCardholder.getCreditCard().getCard_number()
             );
-
         return (result);
     }
 
 
     public void insert_all(Set<Cardholder> lCardholder) throws IOException {
         Set<String> queryStrs = lCardholder.stream().map(this::getQueryStr).collect(Collectors.toSet());
-
         wrapper.load_data(queryStrs);
     }
 

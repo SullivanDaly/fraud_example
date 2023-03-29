@@ -17,22 +17,18 @@ public class BankDAO {
         this.wrapper = wrapper;
     }
 
-
     private String getQueryStr(Bank currentBank) {
-
         String result = query.formatted(
                     currentBank.getBank_name(),
                     currentBank.getBankCoordinates().getLatitude(),
                     currentBank.getBankCoordinates().getLongitude()
             );
-
         return (result);
     }
 
     public void insertAll(Set<Bank> lBank) throws IOException {
 
         Set<String> queryStrs = lBank.stream().map(this::getQueryStr).collect(Collectors.toSet());
-
         wrapper.load_data(queryStrs);
     }
 }

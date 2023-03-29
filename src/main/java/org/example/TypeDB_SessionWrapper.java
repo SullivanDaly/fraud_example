@@ -8,12 +8,10 @@ import com.vaticle.typedb.client.api.TypeDBTransaction;
 import java.io.*;
 import java.util.Set;
 
-
 public class TypeDB_SessionWrapper {
     private final String ip_server;
     private final String port_server;
     private final String database_name;
-
 
     public TypeDB_SessionWrapper(String ip_server, String port_server, String database_name) throws FileNotFoundException {
         this.ip_server = ip_server;
@@ -39,7 +37,6 @@ public class TypeDB_SessionWrapper {
         }
         client.close();
     }
-
 
     public String getDatabase_name() {
         return database_name;

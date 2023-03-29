@@ -34,21 +34,16 @@ public class TransactionDAO {
                     currentTransaction.getCardholder().getCreditCard().getCard_number(),
                     currentTransaction.getMerchant().getCompany_name()
             );
-
             result += query2.formatted(
                     currentTransaction.getDate_transaction(),
                     currentTransaction.getAmount(),
                     currentTransaction.getTransaction_number()
             );
-
         return result;
     }
 
-
-
     public void insert_all(Set<Transaction> lTransaction) throws IOException {
         Set<String> queryStrs = lTransaction.stream().map(this::getQueryStr).collect(Collectors.toSet());
-
         wrapper.load_data(queryStrs);
     }
 }
